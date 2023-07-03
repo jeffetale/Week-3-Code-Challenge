@@ -1,11 +1,36 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Flatdango</title>
+  <link rel="stylesheet" href="./index.css">
 </head>
+
 <body>
-    
+  <header>
+    <h1>Flatdango</h1>
+  </header>
+  <main>
+    <div class="movie-details">
+      <h2>Movie Details</h2>
+      <div class="poster"></div>
+      <div class="details">
+        <h3 class="title"></h3>
+        <p><strong>Runtime:</strong> <span class="runtime"></span></p>
+        <p><strong>Showtime:</strong> <span class="showtime"></span></p>
+        <p><strong>Available Tickets:</strong> <span class="available-tickets"></span></p>
+        <button class="buy-ticket" disabled>Buy Ticket</button>
+      </div>
+    </div>
+    <div class="movie-menu">
+      <h2>Movie Menu</h2>
+      <ul id="films"></ul>
+    </div>
+  </main>
+
+  <script src="./index.js"></script>
 </body>
+
 </html>
