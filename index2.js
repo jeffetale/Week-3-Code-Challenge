@@ -16,7 +16,13 @@ fetch('db.json')
     // Get DOM element for films
     const filmsListElement = document.getElementById('films');
 
-    // Function to update the movie details on the page
+    // Remove the placeholder li element
+    const placeholderElement = document.querySelector('#films > li');
+    if (placeholderElement) {
+      filmsListElement.removeChild(placeholderElement);
+    }
+
+    // Function to display movie details
     function displayMovieDetails(movie) {
       posterElement.style.backgroundImage = `url(${movie.poster})`;
       titleElement.textContent = movie.title;
@@ -31,34 +37,6 @@ fetch('db.json')
       } else {
         buyTicketButton.textContent = 'Sold Out';
         buyTicketButton.disabled = true;
-      }
-    }
-
-    // Function to handle movie selection
-    function selectMovie(event) {
-      const selectedFilmId = event.target.getAttribute('data-id');
-      const selectedFilm = films.find(film => film.id === selectedFilmId);
-      if (selectedFilm) {
-        displayMovieDetails(selectedFilm);
-
-        // Remove the 'sold-out' class from all film items
-        const filmItems = document.querySelectorAll('.film.item');
-        filmItems.forEach(item => item.classList.remove('sold-out'));
-
-        // Add the 'sold-out' class if the movie is sold out
-        if (selectedFilm.capacity - selectedFilm.tickets_sold === 0) {
-          event.target.classList.add('sold-out');
-        }
-      }
-    }
-
-    // Function to handle buy ticket button click
-    function buyTicket() {
-      const selectedFilmId = event.target.getAttribute('data-id');
-      const selectedFilm = films.find(film => film.id === selectedFilmId);
-      if (selectedFilm) {
-        const ticketsSold = selectedFilm.tickets_sold + 1;
-        updateTicketsSold(selectedFilm.id, ticketsSold);
       }
     }
 
@@ -125,24 +103,46 @@ fetch('db.json')
         });
     }
 
-    // Create film items and add them to the films list
+    // Function to handle movie selection
+    function selectMovie(event) {
+      const selectedFilmTitle = event.target.textContent;
+      const selectedFilm = films.find(film => film.title === selectedFilmTitle);
+      if (selectedFilm) {
+        displayMovieDetails(selectedFilm);
+
+        // Removes the 'sold-out' class from all film items
+        const filmItems = document.querySelectorAll('.film.item');
+        filmItems.forEach(item => item.classList.remove('sold-out'));
+
+        // Add the 'sold-out' class if the movie is sold out
+        if (selectedFilm.capacity - selectedFilm.tickets_sold === 0) {
+          event.target.classList.add('sold-out');
+        }
+      }
+    }
+
+    // Function to handle buy ticket button click
+    function buyTicket() {
+      const selectedFilmTitle = titleElement.textContent;
+      const selectedFilm = films.find(film => film.title === selectedFilmTitle);
+      if (selectedFilm) {
+        const ticketsSold = selectedFilm.tickets_sold + 1;
+        updateTicketsSold(selectedFilm.id, ticketsSold);
+      }
+    }
+
+    // Added click event listener to film items in the menu
+    filmsListElement.addEventListener('click', selectMovie);
+
+    // Added click event listener to buy ticket button
+    buyTicketButton.addEventListener('click', buyTicket);
+
+    // Displayed list with all films from the array
     films.forEach(film => {
       const listItem = document.createElement('li');
       listItem.textContent = film.title;
-      listItem.classList.add('film', 'item');
-      listItem.setAttribute('id', `film-${film.id}`); 
-      listItem.setAttribute('data-id', film.id);
-
-      // Create and append the delete button
-      const deleteButton = document.createElement('button');
-      deleteButton.textContent = 'Delete';
-      deleteButton.classList.add('delete-button');
-      deleteButton.addEventListener('click', () => {
-        deleteFilm(film.id);
-      });
-      listItem.appendChild(deleteButton);
-
-      listItem.addEventListener('click', selectMovie);
+      listItem.classList.add('film', 'item'); // Add classes for styling
+      listItem.setAttribute('id', `film-${film.id}`); // Set an ID for the film item
       filmsListElement.appendChild(listItem);
 
       // Add 'sold-out' class to sold out films
@@ -150,14 +150,6 @@ fetch('db.json')
         listItem.classList.add('sold-out');
       }
     });
-
-    // Display details of the first film by default
-    if (films.length > 0) {
-      displayMovieDetails(films[0]);
-    }
-
-    // Added click event listener to buy ticket button
-    buyTicketButton.addEventListener('click', buyTicket);
   })
   .catch(error => {
     console.error('Error fetching movie data:', error);
